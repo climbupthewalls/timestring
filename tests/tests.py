@@ -315,6 +315,11 @@ class timestringTests(unittest.TestCase):
         self.assertTrue(Date("jan 10") + '1 day' == Date("jan 11"))
         self.assertTrue(Date("jan 10") - '5 day' == Date("jan 5"))
 
+        self.assertEqual(Range('from feb 28 2016 to dec 31 2099').cut('1 day').end.day, 29) # leap year
+        self.assertEqual(Range('from feb 28 2017 to dec 31 2099').cut('1 day').end.day, 1) # not leap year
+        self.assertEqual(Range('from feb 28 2016 to dec 31 2099').cut('365 days').end.day, 27) #leap year
+        self.assertEqual(Range('from feb 28 2017 to dec 31 2099').cut('365 days').end.day, 28) #leap year
+
     def test_compare(self):
         self.assertTrue(Range('1 day') == Date('yestserday'))
         self.assertFalse(Range('10 days') == Date('yestserday'))
@@ -347,6 +352,20 @@ class timestringTests(unittest.TestCase):
         self.assertTrue(Date('last fri') in Range('8 days'))
         self.assertEqual(Range('1 year ago'), Range('last year'))
         self.assertEqual(Range('year ago'), Range('last year'))
+
+        with freeze_time('2016-02-29'):
+            leap_year = Range('last year')
+            self.assertEqual(leap_year.start.month, 2)
+            self.assertEqual(leap_year.start.day, 28)
+            self.assertEqual(leap_year.end.month, 2)
+            self.assertEqual(leap_year.end.day, 28)
+
+        with freeze_time('2016-03-01'):
+            leap_year = Range('last year')
+            self.assertEqual(leap_year.start.month, 3)
+            self.assertEqual(leap_year.start.day, 01)
+            self.assertEqual(leap_year.end.month, 2)
+            self.assertEqual(leap_year.end.day, 29)
 
     def test_psql_infinity(self):
         d = Date('infinity')
