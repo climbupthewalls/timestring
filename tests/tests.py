@@ -16,15 +16,15 @@ from timestring.text2num import text2num
 class timestringTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        now_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        #now_date = '2016-02-28T23:59:59'
-        #now_date = '2016-02-29T23:59:59'
-        cls.freezer = freeze_time(now_date)
-        cls.freezer.start()
+        if os.environ.get('NOW'):
+            now_date = datetime.now().strftime(os.environ['NOW'])
+            cls.freezer = freeze_time(now_date)
+            cls.freezer.start()
 
     @classmethod
     def tearDownClass(cls):
-        cls.freezer.stop()
+        if os.environ.get('NOW'):
+            cls.freezer.stop()
 
     def test_fullstring(self):
         now = datetime.now()
