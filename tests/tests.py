@@ -227,12 +227,14 @@ class timestringTests(unittest.TestCase):
         #
         # DOW
         #
-        for x, day in enumerate(('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'Satruday', 'sunday')):
+        dows = ('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'Satruday', 'sunday')
+        for x, day in enumerate(dows):
             d, r = Date(day), Range(day)
             self.assertEqual(d.hour, 0)
             self.assertEqual(d.weekday, 1 + x)
             # length is 1 day in seconds
             self.assertEqual(len(r), 86400)
+            self.assertEqual(r.start.weekday, dows.index(day)+1)
             self.assertEqual(r.start.hour, 0)
             self.assertEqual(r.end.hour, 0)
             self.assertEqual(r.end.weekday, 1 if x+1 == 7 else (2+x))
@@ -268,8 +270,7 @@ class timestringTests(unittest.TestCase):
         self.assertTrue(Range('this month') in Range('this year'))
         self.assertTrue(Range('this day') in Range('this week'))
 
-        # these might not always be true because of end of week
-        with freeze_time("2017-06-14 12:00:01"): # a Wednesday
+        with freeze_time("2017-06-14 12:00:01"):
             self.assertTrue(Range('this week') in Range('this month'))
             self.assertTrue(Range('this week') in Range('this year'))
 
