@@ -14,6 +14,18 @@ from timestring.text2num import text2num
 
 @ddt
 class timestringTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        now_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        #now_date = '2016-02-28T23:59:59'
+        #now_date = '2016-02-29T23:59:59'
+        cls.freezer = freeze_time(now_date)
+        cls.freezer.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.freezer.stop()
+
     def test_fullstring(self):
         now = datetime.now()
 
@@ -171,6 +183,11 @@ class timestringTests(unittest.TestCase):
         #
         # 1 year (from now)
         #
+        with freeze_time("2016-02-29 12:00:00"): # On Leap Day, the "1 year ago's" month was March
+            leap_year = Range('1 year')
+            self.assertEqual(leap_year.start.month, 3)
+            self.assertEqual(leap_year.start.day, 1)
+
         year = Range('1 year')
         self.assertEqual(year.start.year, (now + timedelta(days=1)).year-1)
         self.assertEqual(year.start.month, (now + timedelta(days=1)).month)
@@ -255,10 +272,14 @@ class timestringTests(unittest.TestCase):
         #
         # Lengths
         #
-        self.assertEqual(len(Range("next 10 weeks")), 5443200)
-        self.assertEqual(len(Range("this week")), 604800)
-        self.assertEqual(len(Range("3 weeks")), 1814400)
-        self.assertEqual(len(Range('yesterday')), 86400)
+        with freeze_time("2016-02-28"): # just prior to a Leap Day
+            self.assertEqual(len(Range("next 10 weeks")), 5439600)
+
+        with freeze_time("2017-06-23"):
+            self.assertEqual(len(Range("next 10 weeks")), 5443200)
+            self.assertEqual(len(Range("this week")), 604800)
+            self.assertEqual(len(Range("3 weeks")), 1814400)
+            self.assertEqual(len(Range('yesterday')), 86400)
 
     def test_in(self):
         #
