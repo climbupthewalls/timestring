@@ -270,14 +270,14 @@ class timestringTests(unittest.TestCase):
         self.assertTrue(Range('this month') in Range('this year'))
         self.assertTrue(Range('this day') in Range('this week'))
 
-        with freeze_time("2017-06-14 12:00:01"):
+        with freeze_time("2017-06-14"):
             self.assertTrue(Range('this week') in Range('this month'))
             self.assertTrue(Range('this week') in Range('this year'))
 
-        with freeze_time("2017-12-01 12:00:01"): # first day of month; a Friday
+        with freeze_time("2017-12-01"): # first day of month; a Friday
             self.assertTrue(Range('this week') not in Range('this month'))
 
-        with freeze_time("2017-01-01 12:00:01"): # first day of year; a Sunday
+        with freeze_time("2017-01-01"): # first day of year; a Sunday
             self.assertTrue(Range('this week') not in Range('this year'))
 
     def test_tz(self):
