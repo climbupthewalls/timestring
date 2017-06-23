@@ -316,6 +316,7 @@ class timestringTests(unittest.TestCase):
         self.assertTrue(Date("jan 10") - '5 day' == Date("jan 5"))
 
     def test_compare(self):
+        self.assertTrue(Range('1 day') == Date('yestserday'))
         self.assertFalse(Range('10 days') == Date('yestserday'))
         self.assertTrue(Date('yestserday') in Range('10 days'))
         self.assertTrue(Range('10 days') in Range('100 days'))
