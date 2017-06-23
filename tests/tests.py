@@ -2,6 +2,7 @@ import os
 import time
 import unittest
 from ddt import ddt, data
+from freezegun import freeze_time
 from six import u
 from datetime import datetime, timedelta
 
@@ -266,9 +267,17 @@ class timestringTests(unittest.TestCase):
         self.assertTrue(Date('today') in Range('this month'))
         self.assertTrue(Range('this month') in Range('this year'))
         self.assertTrue(Range('this day') in Range('this week'))
+
         # these might not always be true because of end of week
-        # self.assertTrue(Range('this week') in Range('this month'))
-        # self.assertTrue(Range('this week') in Range('this year'))
+        with freeze_time("2017-06-14 12:00:01"): # a Wednesday
+            self.assertTrue(Range('this week') in Range('this month'))
+            self.assertTrue(Range('this week') in Range('this year'))
+
+        with freeze_time("2017-12-01 12:00:01"): # first day of month; a Friday
+            self.assertTrue(Range('this week') not in Range('this month'))
+
+        with freeze_time("2017-01-01 12:00:01"): # first day of year; a Sunday
+            self.assertTrue(Range('this week') not in Range('this year'))
 
     def test_tz(self):
         #
